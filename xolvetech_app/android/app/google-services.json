@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1070090127833",
+    "project_id": "xolvetech-3b561",
+    "storage_bucket": "xolvetech-3b561.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070090127833:android:104380d5d885ff31c771c8",
+        "android_client_info": {
+          "package_name": "com.example.xolvetech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCdBi6W4u8MnajNXZkpZE_cpFsXVLVpp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
