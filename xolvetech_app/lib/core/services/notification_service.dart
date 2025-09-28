@@ -89,6 +89,6 @@ class NotificationService {
 
 // Handle background messages (must be top-level function)
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
-  // Handle background message
-  print('Handling background message: ${message.messageId}');
+  // Handle background message processing here
+  // You can add logging or other background processing logic
 }
