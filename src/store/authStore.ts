@@ -30,14 +30,21 @@ export const useAuthStore = create<AuthState>()(
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session?.user) {
-            // Fetch user profile
-            const { data: profile } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
+            // For demo purposes, we'll create a mock profile if none exists
+            const mockProfile: AppUser = {
+              id: session.user.id,
+              email: session.user.email || '',
+              full_name: session.user.user_metadata?.full_name || 'Demo User',
+              avatar_url: session.user.user_metadata?.avatar_url || null,
+              bio: undefined,
+              points: 0,
+              level: 1,
+              badges: [],
+              created_at: session.user.created_at,
+              updated_at: new Date().toISOString(),
+            };
             
-            set({ user: session.user, profile, initialized: true });
+            set({ user: session.user, profile: mockProfile, initialized: true });
           } else {
             set({ user: null, profile: null, initialized: true });
           }
@@ -58,13 +65,21 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw error;
           
           if (data.user) {
-            const { data: profile } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', data.user.id)
-              .single();
+            // Create mock profile for demo
+            const mockProfile: AppUser = {
+              id: data.user.id,
+              email: data.user.email || '',
+              full_name: data.user.user_metadata?.full_name || 'Demo User',
+              avatar_url: data.user.user_metadata?.avatar_url || null,
+              bio: undefined,
+              points: 0,
+              level: 1,
+              badges: [],
+              created_at: data.user.created_at,
+              updated_at: new Date().toISOString(),
+            };
             
-            set({ user: data.user, profile });
+            set({ user: data.user, profile: mockProfile });
           }
         } finally {
           set({ loading: false });
@@ -87,23 +102,21 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw error;
           
           if (data.user) {
-            // Create user profile
-            const { data: profile, error: profileError } = await supabase
-              .from('users')
-              .insert({
-                id: data.user.id,
-                email: data.user.email!,
-                full_name: fullName,
-                points: 0,
-                level: 1,
-                badges: [],
-              })
-              .select()
-              .single();
+            // Create mock profile for demo
+            const mockProfile: AppUser = {
+              id: data.user.id,
+              email: data.user.email || '',
+              full_name: fullName,
+              avatar_url: undefined,
+              bio: undefined,
+              points: 0,
+              level: 1,
+              badges: [],
+              created_at: data.user.created_at,
+              updated_at: new Date().toISOString(),
+            };
             
-            if (profileError) throw profileError;
-            
-            set({ user: data.user, profile });
+            set({ user: data.user, profile: mockProfile });
           }
         } finally {
           set({ loading: false });
@@ -116,7 +129,7 @@ export const useAuthStore = create<AuthState>()(
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: `${window.location.origin}/auth/callback`,
+              redirectTo: `${window.location.origin}`,
             },
           });
           
@@ -139,21 +152,19 @@ export const useAuthStore = create<AuthState>()(
       },
 
       updateProfile: async (updates: Partial<AppUser>) => {
-        const { user } = get();
-        if (!user) return;
+        const { user, profile } = get();
+        if (!user || !profile) return;
         
         set({ loading: true });
         try {
-          const { data, error } = await supabase
-            .from('users')
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq('id', user.id)
-            .select()
-            .single();
+          // For demo, just update local state
+          const updatedProfile = {
+            ...profile,
+            ...updates,
+            updated_at: new Date().toISOString(),
+          };
           
-          if (error) throw error;
-          
-          set({ profile: data });
+          set({ profile: updatedProfile });
         } finally {
           set({ loading: false });
         }
@@ -161,7 +172,10 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, profile: state.profile }),
+      partialize: (state) => ({ 
+        user: state.user, 
+        profile: state.profile 
+      }),
     }
   )
 );
